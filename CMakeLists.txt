@@ -3,6 +3,10 @@ project(PlatypusGame)
 
 set(CMAKE_CXX_STANDARD 17)
 
+add_compile_options(-Og)
+
 add_executable(PlatypusGame main.cpp
-		platypusGame.cpp
-		platypusGame.h)
+		PlatypusGame.cpp
+		PlatypusGame.h
+		Result.cpp
+		Result.h)
