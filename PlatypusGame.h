@@ -16,6 +16,28 @@ class PlatypusGame
 
 	int gameLength;
 
+	enum State
+	{
+		KANGAROO,
+		EMU,
+		WOMBAT,
+		PLATYPUS
+	};
+
+	struct Player
+	{
+		long id;
+		int score;
+		long long position;
+		State state;
+	};
+
+	/**
+	 * @brief For a player and a tile colour, update the player according to the tile colour and return new tile colour.
+	 * @return False for yellow, True for green
+	 */
+	bool updatePlayer(Player&, bool);
+
 public:
 
 	enum Rule
@@ -27,7 +49,7 @@ public:
 
 	struct Result
 	{
-		int winner;
+		std::vector<long> winners;
 		std::vector<int> scores;
 	};
 
