@@ -8,6 +8,9 @@
 #define LONG_GAME_TURNS 200
 
 #include <vector>
+#include <deque>
+#include <memory>
+#include <bitset>
 
 class PlatypusGame
 {
@@ -18,25 +21,41 @@ class PlatypusGame
 
 	enum State
 	{
-		KANGAROO,
-		EMU,
-		WOMBAT,
-		PLATYPUS
+		KANGAROO = 0,
+		EMU = 1,
+		WOMBAT = 2,
+		PLATYPUS = 3
 	};
+
+	/**
+	 * Convert a State to a char
+	 * @param state The state to convert
+	 * @return 'K' for KANGAROO, 'E' for EMU, 'W' for WOMBAT, 'P' for PLATYPUS
+	 */
+	inline static char stateToChar(State state);
 
 	struct Player
 	{
-		long id;
+		unsigned long id;
 		int score;
 		long long position;
 		State state;
 	};
 
 	/**
-	 * @brief For a player and a tile colour, update the player according to the tile colour and return new tile colour.
-	 * @return False for yellow, True for green
+	 * Update the given player and return the new tile colour
+	 * @param player The player to update
+	 * @param tileColour The current tile colour (yellow = false, green = true)
+	 * @return The new tile colour (yellow = false, green = true)
 	 */
-	bool updatePlayer(Player&, bool);
+	static bool updatePlayer(const std::shared_ptr<Player>& player, bool tileColour);
+
+	/**
+	 * Print the given board state with players
+	 * @param board The board state to print
+	 * @param players The player positions to print
+	 */
+	static void printBoard(std::array<bool, BOARD_SIZE>& board, std::deque<std::shared_ptr<Player>>& players);
 
 public:
 
@@ -49,34 +68,48 @@ public:
 
 	struct Result
 	{
-		std::vector<long> winners;
+		std::vector<unsigned long> winners;
 		std::vector<int> scores;
 	};
 
 	/**
-	 * @brief Construct a new game with standard rules
+	 * Construct a new game with standard rules
 	 */
 	PlatypusGame();
 
 	/**
-	 * @brief Construct a new game with rules
+	 * Construct a new game with specified rules
+	 * @param rules Vector of rules to use for this game
 	 */
-	PlatypusGame(const std::vector<Rule>&);
+	PlatypusGame(const std::vector<Rule>& rules);
 
 	/**
-	 * @brief Construct a new game with rules and custom game length
+	 * Construct a new game with specified rules and custom length
+	 * @param rules Vector of rules to use for this game
+	 * @param gameLength Game length, in turns
 	 */
-	PlatypusGame(const std::vector<Rule>&, int);
+	PlatypusGame(const std::vector<Rule>& rules, int gameLength);
 
 	/**
-	 * @brief Run the game and return a result
+	 * Run a game with the specified players and return the result
+	 * @param playerIDs A vector of the IDs of the machines in this game
+	 * @return A result struct containing a vector of winners and a vector of scores
 	 */
-	Result runGame(const std::vector<long>&);
+	Result runGame(const std::vector<unsigned long>& playerIDs);
 
 	/**
-	 * @brief Run the game and return a result (print each step of the game)
+	 * Run a game with the specified players and return the result
+	 * @param playerIDs A vector of the IDs of the machines in this game
+	 * @param printTrace True to print every step of the game
+	 * @return A result struct containing a vector of winners and a vector of scores
 	 */
-	Result runGame(const std::vector<long>&, bool);
+	Result runGame(const std::vector<unsigned long>& playerIDs, bool printTrace);
+
+	/**
+	 * Print a rules table for a given machine
+	 * @param playerID The ID of the machine to print
+	 */
+	static void printTable(unsigned long playerID);
 };
 
 

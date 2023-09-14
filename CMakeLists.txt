@@ -3,7 +3,7 @@ project(PlatypusGame)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_compile_options(-Og)
+add_compile_options(-O0)
 
 add_executable(PlatypusGame main.cpp
 		PlatypusGame.cpp
