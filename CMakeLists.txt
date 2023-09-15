@@ -7,4 +7,5 @@ add_compile_options(-O0)
 
 add_executable(PlatypusGame main.cpp
 		PlatypusGame.cpp
-		PlatypusGame.h)
+		PlatypusGame.h
+		Tournament.h)
