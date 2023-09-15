@@ -3,10 +3,10 @@
 #include <iostream>
 #include "PlatypusGame.h"
 
-PlatypusGame::PlatypusGame() : PlatypusGame{std::vector<Rule>(), STANDARD_GAME_TURNS}
+PlatypusGame::PlatypusGame() : PlatypusGame {std::vector<Rule>(), STANDARD_GAME_TURNS}
 {}
 
-PlatypusGame::PlatypusGame(const std::vector<Rule>& rules) : PlatypusGame{rules, STANDARD_GAME_TURNS}
+PlatypusGame::PlatypusGame(const std::vector<Rule>& rules) : PlatypusGame {rules, STANDARD_GAME_TURNS}
 {
 	for (Rule rule : rules)
 	{
@@ -20,7 +20,7 @@ PlatypusGame::PlatypusGame(const std::vector<Rule>& rules) : PlatypusGame{rules,
 	}
 }
 
-PlatypusGame::PlatypusGame(const std::vector<Rule>& rules, int gameLength) : gameLength{gameLength}
+PlatypusGame::PlatypusGame(const std::vector<Rule>& rules, int gameLength) : gameLength {gameLength}
 {
 	for (Rule rule : rules)
 	{
@@ -31,14 +31,14 @@ PlatypusGame::PlatypusGame(const std::vector<Rule>& rules, int gameLength) : gam
 
 PlatypusGame::Result PlatypusGame::runGame(const std::vector<unsigned long>& playerIDs, bool printTrace)
 {
-	std::array<bool, BOARD_SIZE> board{false};
+	std::array<bool, BOARD_SIZE> board {false};
 
 	std::deque<std::shared_ptr<Player>> players;
 
 	// Create Player structs for every player
 	for (unsigned long id : playerIDs)
 	{
-		players.push_back(std::make_shared<Player>(Player{id, 0, (BOARD_SIZE - 1) / 2, KANGAROO}));
+		players.push_back(std::make_shared<Player>(Player {id, 0, (BOARD_SIZE - 1) / 2, KANGAROO}));
 	}
 
 	// One game for each player, so each gets a turn going first
@@ -141,7 +141,7 @@ PlatypusGame::Result PlatypusGame::runGame(const std::vector<unsigned long>& pla
 		std::cout << std::endl;
 	}
 
-	return {winners, scores};
+	return {playerIDs, winners, scores};
 }
 
 PlatypusGame::Result PlatypusGame::runGame(const std::vector<unsigned long>& playerIDs)
@@ -237,13 +237,13 @@ void PlatypusGame::printTable(unsigned long playerID)
 	std::vector<State> newStates;
 	std::vector<bool> directions;
 
-	for (State state : std::array<State, 4>{KANGAROO, EMU, WOMBAT, PLATYPUS})
+	for (State state : std::array<State, 4> {KANGAROO, EMU, WOMBAT, PLATYPUS})
 	{
-		for (bool colour : std::array<bool, 2>{false, true})
+		for (bool colour : std::array<bool, 2> {false, true})
 		{
 			if (!(state == PLATYPUS && colour))
 			{
-				std::shared_ptr<Player> player = std::make_shared<Player>(Player{playerID, 0, 1, state});
+				std::shared_ptr<Player> player = std::make_shared<Player>(Player {playerID, 0, 1, state});
 				newColours.push_back(updatePlayer(player, colour));
 				newStates.push_back(player->state);
 				directions.push_back(player->position > 0);

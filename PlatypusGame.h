@@ -68,6 +68,7 @@ public:
 
 	struct Result
 	{
+		std::vector<unsigned long> participants;
 		std::vector<unsigned long> winners;
 		std::vector<int> scores;
 	};
