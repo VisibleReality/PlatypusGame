@@ -150,7 +150,7 @@ std::shared_ptr<PlatypusGame::Result> PlatypusGame::runGame
 	return result;
 }
 
-std::shared_ptr<Result> PlatypusGame::runGame(const std::vector<unsigned long>& playerIDs)
+std::shared_ptr<PlatypusGame::Result> PlatypusGame::runGame(const std::vector<unsigned long>& playerIDs)
 {
 	return runGame(playerIDs, false);
 }

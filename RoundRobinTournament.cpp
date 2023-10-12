@@ -14,7 +14,7 @@ RoundRobinTournament::RoundRobinTournament(std::vector<unsigned long>& playerIDs
 			));
 		}
 
-		standings.at(playerIDs.at(i)) = Standing({0, 0, 0});
+		standings.emplace(playerIDs.at(i), Standing({0, 0, 0}));
 	}
 }
 
