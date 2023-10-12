@@ -38,7 +38,7 @@ class PlatypusGame
 	{
 		unsigned long id;
 		int score;
-		long long position;
+		size_t position;
 		State state;
 	};
 
@@ -96,7 +96,7 @@ public:
 	 * @param playerIDs A vector of the IDs of the machines in this game
 	 * @return A result struct containing a vector of winners and a vector of scores
 	 */
-	Result runGame(const std::vector<unsigned long>& playerIDs);
+	std::shared_ptr<Result> runGame(const std::vector<unsigned long>& playerIDs);
 
 	/**
 	 * Run a game with the specified players and return the result
@@ -104,7 +104,7 @@ public:
 	 * @param printTrace True to print every step of the game
 	 * @return A result struct containing a vector of winners and a vector of scores
 	 */
-	Result runGame(const std::vector<unsigned long>& playerIDs, bool printTrace);
+	std::shared_ptr<Result> runGame(const std::vector<unsigned long>& playerIDs, bool printTrace);
 
 	/**
 	 * Print a rules table for a given machine

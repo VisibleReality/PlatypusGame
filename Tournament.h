@@ -19,13 +19,13 @@ public:
 	 * @param count The limit for the amount of games to get.
 	 * @return A vector of at most count games. The vector may be shorter than specified in count.
 	 */
-	virtual std::vector<std::vector<unsigned long>> getNextGames(int count) = 0;
+	virtual std::vector<std::shared_ptr<std::vector<unsigned long>>> getNextGames(int count) = 0;
 
 	/**
 	 * Process a vector of results, to create final ranking output and also potentially determine future matches.
 	 * @param results A vector of Results to process. Each result must be for a game created by this Tournament.
 	 */
-	virtual void processResults(std::vector<PlatypusGame::Result> results) = 0;
+	virtual void processResults(std::vector<std::shared_ptr<PlatypusGame::Result>> results) = 0;
 
 	/**
 	 * Output the results of the tournament. If tournament is not done, results will be incomplete.

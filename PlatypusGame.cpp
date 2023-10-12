@@ -29,7 +29,8 @@ PlatypusGame::PlatypusGame(const std::vector<Rule>& rules, int gameLength) : gam
 	}
 }
 
-PlatypusGame::Result PlatypusGame::runGame(const std::vector<unsigned long>& playerIDs, bool printTrace)
+std::shared_ptr<PlatypusGame::Result> PlatypusGame::runGame
+		(const std::vector<unsigned long>& playerIDs, bool printTrace)
 {
 	std::array<bool, BOARD_SIZE> board {false};
 
@@ -80,7 +81,7 @@ PlatypusGame::Result PlatypusGame::runGame(const std::vector<unsigned long>& pla
 				}
 
 				// Otherwise run the player's turn and update the board
-				long long originalPosition = player->position;
+				size_t originalPosition = player->position;
 				board.at(originalPosition) = updatePlayer(player, board.at(originalPosition));
 			}
 
@@ -141,10 +142,15 @@ PlatypusGame::Result PlatypusGame::runGame(const std::vector<unsigned long>& pla
 		std::cout << std::endl;
 	}
 
-	return {playerIDs, winners, scores};
+	auto result = std::make_shared<PlatypusGame::Result>();
+	result->participants = playerIDs;
+	result->winners = winners;
+	result->scores = scores;
+
+	return result;
 }
 
-PlatypusGame::Result PlatypusGame::runGame(const std::vector<unsigned long>& playerIDs)
+std::shared_ptr<Result> PlatypusGame::runGame(const std::vector<unsigned long>& playerIDs)
 {
 	return runGame(playerIDs, false);
 }
