@@ -18,4 +18,6 @@ add_executable(PlatypusGame main.cpp
 		RoundRobinTournament.cpp
 		RoundRobinTournament.h
 		TournamentRunner.cpp
-		TournamentRunner.h)
+		TournamentRunner.h
+		PartialRoundRobinTournament.cpp
+		PartialRoundRobinTournament.h)

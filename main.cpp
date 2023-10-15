@@ -7,12 +7,14 @@
 #include "PlatypusGame.h"
 #include "RoundRobinTournament.h"
 #include "TournamentRunner.h"
+#include "PartialRoundRobinTournament.h"
 
 int main(int argc, char* argv[])
 {
 	argparse::ArgumentParser program("PlatypusGame");
 
-	program.add_argument("tournament-type").help("Name of tournament to run. Valid names are: roundrobin");
+	program.add_argument("tournament-type")
+			.help("Name of tournament to run. [x] indicates a variable. Valid names are: roundrobin partialroundrobin_[x]");
 	program.add_argument("input").help("File to read machine numbers from");
 	program.add_argument("output").help("Filename to write results to");
 
@@ -68,7 +70,7 @@ int main(int argc, char* argv[])
 			if (rule == "long")
 			{
 				rules.push_back(PlatypusGame::Rule::LONG);
-				std::cout << "long" ;
+				std::cout << "long";
 			}
 			else if (rule == "short")
 			{
@@ -109,9 +111,30 @@ int main(int argc, char* argv[])
 
 	std::shared_ptr<Tournament> tournament;
 
-	if (program.get<std::string>("tournament-type") == "roundrobin")
+	std::string tournamentType = program.get<std::string>("tournament-type");
+	if (tournamentType == "roundrobin")
 	{
+		std::cout << "Using tournament type: " << tournamentType << std::endl;
 		tournament = std::make_shared<RoundRobinTournament>(players);
+	}
+	else if (tournamentType.rfind("partialroundrobin", 0) == 0)
+	{
+		std::cout << "Using tournament type: " << tournamentType << std::endl;
+		tournamentType.erase(std::remove_if(tournamentType.begin(), tournamentType.end(),
+											[](auto const& c) -> bool { return !std::isdigit(c); }),
+							 tournamentType.end());
+
+		if (tournamentType.empty())
+		{
+			std::cerr << "Error: Must specify percentage for partial round robin." << std::endl;
+			std::exit(1);
+		}
+		tournament = std::make_shared<PartialRoundRobinTournament>(players, std::stoi(tournamentType));
+	}
+	else
+	{
+		std::cerr << "Error: Unknown tournament type" << std::endl;
+		std::exit(1);
 	}
 
 	TournamentRunner runner = TournamentRunner(*tournament, platypusGame,
