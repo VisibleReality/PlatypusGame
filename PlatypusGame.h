@@ -3,19 +3,28 @@
 #define PLATYPUSGAME_PLATYPUSGAME_H
 
 #define BOARD_SIZE 21
+
 #define STANDARD_GAME_TURNS 100
 #define SHORT_GAME_TURNS 100
 #define LONG_GAME_TURNS 200
+
+#define TREE_BONUS 5
+#define TERMINATE_BONUS 25
 
 #include <vector>
 #include <deque>
 #include <memory>
 #include <bitset>
+#include <random>
 
 class PlatypusGame
 {
 	// Rule flags
-	//todo add rules
+	bool ruleTree = false;
+	bool ruleTiebreaker = false;
+	bool ruleTerminate = false;
+
+	std::default_random_engine randomEngine;
 
 	int gameLength;
 
@@ -48,7 +57,7 @@ class PlatypusGame
 	 * @param tileColour The current tile colour (yellow = false, green = true)
 	 * @return The new tile colour (yellow = false, green = true)
 	 */
-	static bool updatePlayer(const std::shared_ptr<Player>& player, bool tileColour);
+	bool updatePlayer(const std::shared_ptr<Player>& player, bool tileColour) const;
 
 	/**
 	 * Print the given board state with players
@@ -62,8 +71,10 @@ public:
 	enum Rule
 	{
 		LONG,
-		SHORT
-		// TODO add other rules
+		SHORT,
+		TREE,
+		TIEBREAKER,
+		TERMINATE
 	};
 
 	struct Result
@@ -107,10 +118,19 @@ public:
 	std::shared_ptr<Result> runGame(const std::vector<unsigned long>& playerIDs, bool printTrace);
 
 	/**
+	 * Run a game with the specified players and return the result
+	 * @param playerIDs A vector of the IDs of the machines in this game
+	 * @param printTrace True to print every step of the game
+	 * @param tiebreaker Start with random board state, do not start another tiebreaker
+	 * @return A result struct containing a vector of winners and a vector of scores
+	 */
+	std::shared_ptr<Result> runGame(const std::vector<unsigned long>& playerIDs, bool printTrace, bool tiebreaker);
+
+	/**
 	 * Print a rules table for a given machine
 	 * @param playerID The ID of the machine to print
 	 */
-	static void printTable(unsigned long playerID);
+	void printTable(unsigned long playerID);
 };
 
 

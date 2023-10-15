@@ -1,6 +1,8 @@
 
 #include <array>
 #include <iostream>
+#include <functional>
+#include <chrono>
 #include "PlatypusGame.h"
 
 PlatypusGame::PlatypusGame() : PlatypusGame {std::vector<Rule>(), STANDARD_GAME_TURNS}
@@ -13,26 +15,61 @@ PlatypusGame::PlatypusGame(const std::vector<Rule>& rules) : PlatypusGame {rules
 		if (rule == Rule::LONG)
 		{
 			gameLength = LONG_GAME_TURNS;
-		} else if (rule == Rule::SHORT)
+		}
+		else if (rule == Rule::SHORT)
 		{
 			gameLength = SHORT_GAME_TURNS;
+		}
+		else if (rule == Rule::TREE)
+		{
+			ruleTree = true;
+		}
+		else if (rule == Rule::TIEBREAKER)
+		{
+			ruleTiebreaker = true;
+		}
+		else if (rule == Rule::TERMINATE)
+		{
+			ruleTerminate = true;
 		}
 	}
 }
 
 PlatypusGame::PlatypusGame(const std::vector<Rule>& rules, int gameLength) : gameLength {gameLength}
 {
+	randomEngine = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
+
 	for (Rule rule : rules)
 	{
-		// Set rule flags
-		// No rules implemented yet
+		if (rule == Rule::TREE)
+		{
+			ruleTree = true;
+		}
+		else if (rule == Rule::TIEBREAKER)
+		{
+			ruleTiebreaker = true;
+		}
+		else if (rule == Rule::TERMINATE)
+		{
+			ruleTerminate = true;
+		}
 	}
 }
 
 std::shared_ptr<PlatypusGame::Result> PlatypusGame::runGame
-		(const std::vector<unsigned long>& playerIDs, bool printTrace)
+		(const std::vector<unsigned long>& playerIDs, bool printTrace, bool tiebreaker)
 {
 	std::array<bool, BOARD_SIZE> board {false};
+
+	// If tiebreaker, randomize board
+	if (tiebreaker)
+	{
+		auto distribution = std::uniform_int_distribution<>(0, 1);
+		for (bool& i : board)
+		{
+			i = (bool) distribution(randomEngine);
+		}
+	}
 
 	std::deque<std::shared_ptr<Player>> players;
 
@@ -66,6 +103,12 @@ std::shared_ptr<PlatypusGame::Result> PlatypusGame::runGame
 				// Check to see if the player is a green platypus (terminates this game)
 				if (board.at(player->position) and player->state == PLATYPUS)
 				{
+					// Terminate bonus
+					if (ruleTerminate)
+					{
+						player->score += TERMINATE_BONUS;
+					}
+
 					if (printTrace)
 					{
 						std::cout << "Game terminated by " << player->id << std::endl;
@@ -115,7 +158,8 @@ std::shared_ptr<PlatypusGame::Result> PlatypusGame::runGame
 			winningScore = player->score;
 			winners.clear();
 			winners.push_back(player->id);
-		} else if (player->score == winningScore)
+		}
+		else if (player->score == winningScore)
 		{
 			winners.push_back(player->id);
 		}
@@ -125,6 +169,17 @@ std::shared_ptr<PlatypusGame::Result> PlatypusGame::runGame
 	if (winners.size() == players.size())
 	{
 		winners.clear();
+
+		// Run tiebreaker
+		if (ruleTiebreaker && !tiebreaker)
+		{
+			auto result = runGame(playerIDs, false, true);
+			winners = result->winners;
+			for (int i = 0; i < result->scores.size(); ++i)
+			{
+				scores.at(i) += result->scores.at(i);
+			}
+		}
 	}
 
 	if (printTrace)
@@ -150,12 +205,18 @@ std::shared_ptr<PlatypusGame::Result> PlatypusGame::runGame
 	return result;
 }
 
-std::shared_ptr<PlatypusGame::Result> PlatypusGame::runGame(const std::vector<unsigned long>& playerIDs)
+std::shared_ptr<PlatypusGame::Result> PlatypusGame::runGame
+		(const std::vector<unsigned long>& playerIDs, bool printTrace)
 {
-	return runGame(playerIDs, false);
+	return runGame(playerIDs, printTrace, false);
 }
 
-bool PlatypusGame::updatePlayer(const std::shared_ptr<Player>& player, bool tileColour)
+std::shared_ptr<PlatypusGame::Result> PlatypusGame::runGame(const std::vector<unsigned long>& playerIDs)
+{
+	return runGame(playerIDs, false, false);
+}
+
+bool PlatypusGame::updatePlayer(const std::shared_ptr<Player>& player, bool tileColour) const
 {
 	// Bit-shifting magic code
 
@@ -171,13 +232,26 @@ bool PlatypusGame::updatePlayer(const std::shared_ptr<Player>& player, bool tile
 		if (player->position < 0)
 		{ // If moved off left side, move to right
 			player->position = BOARD_SIZE - 1;
+
+			// Reached tree
+			if (ruleTree)
+			{
+				player->score += TREE_BONUS;
+			}
 		}
-	} else // Otherwise move to the right
+	}
+	else // Otherwise move to the right
 	{
 		player->position += 1;
 		if (player->position >= BOARD_SIZE)
 		{ // If moved off right side, move to left
 			player->position = 0;
+
+			// Reached tree
+			if (ruleTree)
+			{
+				player->score += TREE_BONUS;
+			}
 		}
 	}
 
@@ -205,7 +279,7 @@ bool PlatypusGame::updatePlayer(const std::shared_ptr<Player>& player, bool tile
 	bool newColour = idBitset.test(0);
 	if (newColour != tileColour)
 	{
-		player->score += 1;
+		++player->score;
 	}
 
 	// Return new colour
@@ -225,7 +299,8 @@ void PlatypusGame::printBoard(std::array<bool, 21>& board, std::deque<std::share
 		if (tile)
 		{
 			std::cout << 'G';
-		} else
+		}
+		else
 		{
 			std::cout << "Y";
 		}
@@ -263,7 +338,8 @@ void PlatypusGame::printTable(unsigned long playerID)
 		if (colour)
 		{
 			std::cout << " G  |";
-		} else
+		}
+		else
 		{
 			std::cout << " Y  |";
 		}
@@ -283,7 +359,8 @@ void PlatypusGame::printTable(unsigned long playerID)
 		if (direction)
 		{
 			std::cout << " GG |";
-		} else
+		}
+		else
 		{
 			std::cout << " WA |";
 		}

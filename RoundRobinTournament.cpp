@@ -69,7 +69,7 @@ void RoundRobinTournament::processResults(std::vector<std::shared_ptr<PlatypusGa
 
 void RoundRobinTournament::outputResults(std::ostream& outputStream)
 {
-	outputStream << "Number, Wins, For, Against\n";
+	outputStream << "Number,Wins,For,Against\n";
 	for (auto playerID : playerIDs)
 	{
 		outputStream << playerID << ",";

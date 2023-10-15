@@ -30,7 +30,8 @@ int main()
 
 	RoundRobinTournament tournament = RoundRobinTournament(players);
 
-	PlatypusGame platypusGame = PlatypusGame();
+	PlatypusGame platypusGame = PlatypusGame(
+			{PlatypusGame::Rule::TREE, PlatypusGame::Rule::TERMINATE, PlatypusGame::Rule::TIEBREAKER});
 
 	TournamentRunner runner = TournamentRunner(tournament, platypusGame,
 											   std::thread::hardware_concurrency());
