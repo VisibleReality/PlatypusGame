@@ -3,7 +3,15 @@ project(PlatypusGame)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_compile_options(-O0)
+
+if(CMAKE_BUILD_TYPE STREQUAL Debug)
+	add_compile_options(-O0)
+else()
+	add_compile_options(-O3)
+endif()
+
+
+
 
 add_executable(PlatypusGame main.cpp
 		PlatypusGame.cpp
