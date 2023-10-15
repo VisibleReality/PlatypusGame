@@ -31,7 +31,7 @@ public:
 	 * Output the results of the tournament. If tournament is not done, results will be incomplete.
 	 * @param outputStream Stream to output the results to.
 	 */
-	virtual void outputResults(std::ostream outputStream) = 0;
+	virtual void outputResults(std::ostream& outputStream) = 0;
 
 	/**
 	 * Output a file containing the information required to resume this tournament later.

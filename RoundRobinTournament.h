@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include "Tournament.h"
 
-class RoundRobinTournament : Tournament
+class RoundRobinTournament : public Tournament
 {
 	struct Standing {
 		long wins;
@@ -17,7 +17,10 @@ class RoundRobinTournament : Tournament
 
 	std::vector<unsigned long> playerIDs;
 	std::vector<std::shared_ptr<std::vector<unsigned long>>> gameList;
+
 	size_t nextGameIndex;
+	size_t numResultsProcessed;
+
 	std::mutex nextGameMutex;
 	std::mutex processResultsMutex;
 
@@ -39,7 +42,7 @@ public:
 
 	void processResults(std::vector<std::shared_ptr<PlatypusGame::Result>> results) override;
 
-	void outputResults(std::ostream outputStream) override;
+	void outputResults(std::ostream& outputStream) override;
 
 	void save(std::ostream saveStream) override;
 };

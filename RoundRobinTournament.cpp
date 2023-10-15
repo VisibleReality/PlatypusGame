@@ -3,7 +3,7 @@
 #include "RoundRobinTournament.h"
 
 RoundRobinTournament::RoundRobinTournament(std::vector<unsigned long>& playerIDs) :
-		playerIDs {playerIDs}, nextGameIndex {0}
+		playerIDs {playerIDs}, nextGameIndex {0}, numResultsProcessed {0}
 {
 	for (size_t i = 0; i < playerIDs.size(); ++i)
 	{
@@ -25,7 +25,7 @@ RoundRobinTournament::RoundRobinTournament(std::istream saveStream)
 
 bool RoundRobinTournament::tournamentDone()
 {
-	return nextGameIndex == gameList.size();
+	return nextGameIndex == gameList.size() && numResultsProcessed == gameList.size();
 }
 
 std::vector<std::shared_ptr<std::vector<unsigned long>>> RoundRobinTournament::getNextGames(int count)
@@ -49,28 +49,34 @@ void RoundRobinTournament::processResults(std::vector<std::shared_ptr<PlatypusGa
 
 	for (const auto& result : results)
 	{
-		for (auto winner : result->winners)
+		++numResultsProcessed;
+
+		if (!result->winners.empty())
 		{
-			++standings.at(winner).wins;
+			++standings.at(result->winners.at(0)).wins;
 		}
 
-		for (size_t i = 0; i < result->participants.size(); ++i)
-		{
-			standings.at(result->participants.at(i)).pointsFor += result->scores.at(i);
-			for (auto participant : result->participants)
-			{
-				if (participant != result->participants.at(i))
-				{
-					standings.at(participant).pointsAgainst += result->scores.at(i);
-				}
-			}
-		}
+		unsigned long player1 = result->participants.at(0);
+		unsigned long player2 = result->participants.at(1);
+
+		standings.at(player1).pointsFor += result->scores.at(0);
+		standings.at(player2).pointsAgainst += result->scores.at(0);
+
+		standings.at(player2).pointsFor += result->scores.at(1);
+		standings.at(player1).pointsAgainst += result->scores.at(1);
 	}
 }
 
-void RoundRobinTournament::outputResults(std::ostream outputStream)
+void RoundRobinTournament::outputResults(std::ostream& outputStream)
 {
-
+	outputStream << "Number, Wins, For, Against\n";
+	for (auto playerID : playerIDs)
+	{
+		outputStream << playerID << ",";
+		outputStream << standings.at(playerID).wins << ",";
+		outputStream << standings.at(playerID).pointsFor << ",";
+		outputStream << standings.at(playerID).pointsAgainst << std::endl;
+	}
 }
 
 void RoundRobinTournament::save(std::ostream saveStream)
