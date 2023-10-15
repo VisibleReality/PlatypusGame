@@ -51,7 +51,7 @@ std::shared_ptr<PlatypusGame::Result> PlatypusGame::runGame
 		}
 
 		// Run through each turn of the game
-		for (int turn = 0; turn < gameLength; ++turn)
+		for (int turn = 0; turn < gameLength / players.size(); ++turn)
 		{
 			bool terminated = false;
 			// Run through every player in order

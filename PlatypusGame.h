@@ -38,7 +38,7 @@ class PlatypusGame
 	{
 		unsigned long id;
 		int score;
-		size_t position;
+		long long position;
 		State state;
 	};
 
