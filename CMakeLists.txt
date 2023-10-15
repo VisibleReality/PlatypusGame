@@ -10,4 +10,6 @@ add_executable(PlatypusGame main.cpp
 		PlatypusGame.h
 		Tournament.h
 		RoundRobinTournament.cpp
-		RoundRobinTournament.h)
+		RoundRobinTournament.h
+		TournamentRunner.cpp
+		TournamentRunner.h)
