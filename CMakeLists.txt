@@ -13,11 +13,8 @@ endif()
 
 add_executable(PlatypusGame main.cpp
 		PlatypusGame.cpp
-		PlatypusGame.h
-		Tournament.h
 		RoundRobinTournament.cpp
-		RoundRobinTournament.h
 		TournamentRunner.cpp
-		TournamentRunner.h
 		PartialRoundRobinTournament.cpp
-		PartialRoundRobinTournament.h)
+		EloRandomTournament.cpp
+)

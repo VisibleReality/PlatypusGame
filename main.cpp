@@ -8,13 +8,14 @@
 #include "RoundRobinTournament.h"
 #include "TournamentRunner.h"
 #include "PartialRoundRobinTournament.h"
+#include "EloRandomTournament.h"
 
 int main(int argc, char* argv[])
 {
 	argparse::ArgumentParser program("PlatypusGame");
 
 	program.add_argument("tournament-type")
-			.help("Name of tournament to run. [x] indicates a variable. Valid names are: roundrobin partialroundrobin_[x]");
+			.help("Name of tournament to run. [x] indicates a variable. Valid names are: roundrobin partialroundrobin_[x] elorandom_[x]");
 	program.add_argument("input").help("File to read machine numbers from");
 	program.add_argument("output").help("Filename to write results to");
 
@@ -111,7 +112,7 @@ int main(int argc, char* argv[])
 
 	std::shared_ptr<Tournament> tournament;
 
-	std::string tournamentType = program.get<std::string>("tournament-type");
+	auto tournamentType = program.get<std::string>("tournament-type");
 	if (tournamentType == "roundrobin")
 	{
 		std::cout << "Using tournament type: " << tournamentType << std::endl;
@@ -126,10 +127,24 @@ int main(int argc, char* argv[])
 
 		if (tournamentType.empty())
 		{
-			std::cerr << "Error: Must specify percentage for partial round robin." << std::endl;
+			std::cerr << "Error: Must specify percentage for partial round robin tournament." << std::endl;
 			std::exit(1);
 		}
 		tournament = std::make_shared<PartialRoundRobinTournament>(players, std::stoi(tournamentType));
+	}
+	else if (tournamentType.rfind("elorandom", 0) == 0)
+	{
+		std::cout << "Using tournament type: " << tournamentType << std::endl;
+		tournamentType.erase(std::remove_if(tournamentType.begin(), tournamentType.end(),
+											[](auto const& c) -> bool { return !std::isdigit(c); }),
+							 tournamentType.end());
+
+		if (tournamentType.empty())
+		{
+			std::cerr << "Error: Must specify percentage for random elo tournament." << std::endl;
+			std::exit(1);
+		}
+		tournament = std::make_shared<EloRandomTournament>(players, std::stoi(tournamentType));
 	}
 	else
 	{
