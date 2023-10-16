@@ -17,4 +17,6 @@ add_executable(PlatypusGame main.cpp
 		TournamentRunner.cpp
 		PartialRoundRobinTournament.cpp
 		EloRandomTournament.cpp
+        GlickoRandomTournament.cpp
+        include/glicko2/rating.cpp
 )
