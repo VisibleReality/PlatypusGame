@@ -19,7 +19,7 @@ PartialRoundRobinTournament::PartialRoundRobinTournament(std::vector<unsigned lo
 			));
 		}
 
-		standings.emplace(playerIDs.at(i), Standing({0, 0, 0}));
+		standings.emplace(playerIDs.at(i), Standing({0, 0, 0, 0}));
 	}
 
 	auto randomEngine = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
@@ -77,7 +77,10 @@ void PartialRoundRobinTournament::processResults(std::vector<std::shared_ptr<Pla
 		standings.at(player1).pointsAgainst += result->scores.at(1);
 
 		++standings.at(player1).gamesPlayed;
-		++standings.at(player2).gamesPlayed;
+		if (player1 != player2)
+		{
+			++standings.at(player2).gamesPlayed;
+		}
 	}
 }
 
