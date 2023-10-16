@@ -10,13 +10,14 @@
 #include "PartialRoundRobinTournament.h"
 #include "EloRandomTournament.h"
 #include "GlickoRandomTournament.h"
+#include "SingleEliminationTournament.h"
 
 int main(int argc, char* argv[])
 {
 	argparse::ArgumentParser program("PlatypusGame");
 
 	program.add_argument("tournament-type")
-			.help("Name of tournament to run. [x] indicates a variable. Valid names are: roundrobin partialroundrobin_[x] elorandom_[x] glickorandom_[x]");
+			.help("Name of tournament to run. [x] indicates a variable. Valid names are: roundrobin partialroundrobin_[x] elorandom_[x] glickorandom_[x] singleelim");
 	program.add_argument("input").help("File to read machine numbers from");
 	program.add_argument("output").help("Filename to write results to");
 
@@ -54,6 +55,7 @@ int main(int argc, char* argv[])
 			players.push_back(std::stoi(line));
 		}
 	}
+	inFile.close();
 
 	if (players.empty())
 	{
@@ -161,6 +163,11 @@ int main(int argc, char* argv[])
 		}
 		tournament = std::make_shared<GlickoRandomTournament>(players, std::stoi(tournamentType));
 	}
+	else if (tournamentType == "singleelim")
+	{
+		std::cout << "Using tournament type: " << tournamentType << std::endl;
+		tournament = std::make_shared<SingleEliminationTournament>(players);
+	}
 	else
 	{
 		std::cerr << "Error: Unknown tournament type" << std::endl;
@@ -177,6 +184,8 @@ int main(int argc, char* argv[])
 	std::ofstream outFile(program.get<std::string>("output"));
 
 	tournament->outputResults(outFile);
+
+	outFile.close();
 
 	std::chrono::duration<double, std::milli> duration = finishTime - startTime;
 
