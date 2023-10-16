@@ -3,7 +3,6 @@
 #include <random>
 #include <chrono>
 #include <algorithm>
-#include <iostream>
 #include "EloRandomTournament.h"
 
 EloRandomTournament::EloRandomTournament(std::vector<unsigned long>& playerIDs, int percentage) :
@@ -28,10 +27,6 @@ EloRandomTournament::EloRandomTournament(std::vector<unsigned long>& playerIDs, 
 			(fullGameList.begin(), fullGameList.begin() + fullGameList.size() * (percentage / 100.0));
 
 	config = Elo::Configuration((double) K_SCALE / ((double)gameList.size() + K_OFFSET));
-
-	std::cout << gameList.size() << std::endl;
-	std::cout << (double) K_SCALE / ((double)gameList.size() + K_OFFSET) << std::endl;
-	std::cout << 1920000.0 / (double)gameList.size() << std::endl;
 
 	for (auto playerID : playerIDs)
 	{
